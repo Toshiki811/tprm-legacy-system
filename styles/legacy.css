@@ -1,0 +1,250 @@
+/* 意図的なレトロスタイル - 1990〜2000年代の銀行システム風 */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'MS Gothic', 'ＭＳ ゴシック', monospace, sans-serif;
+  font-size: 13px;
+  background-color: #c0c0c0;
+  color: #000000;
+  margin: 0;
+  padding: 0;
+}
+
+.window {
+  background-color: #d4d0c8;
+  border: 2px solid #ffffff;
+  border-right-color: #808080;
+  border-bottom-color: #808080;
+  margin: 10px;
+  padding: 0;
+}
+
+.title-bar {
+  background: linear-gradient(to right, #000080, #1084d0);
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 3px 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.title-bar-text {
+  font-family: 'MS Gothic', monospace;
+}
+
+.menu-bar {
+  background-color: #d4d0c8;
+  border-bottom: 1px solid #808080;
+  padding: 2px 4px;
+  font-size: 12px;
+}
+
+.menu-bar a {
+  color: #000;
+  text-decoration: none;
+  padding: 2px 8px;
+  margin-right: 2px;
+  display: inline-block;
+}
+
+.menu-bar a:hover {
+  background-color: #000080;
+  color: #fff;
+}
+
+.content-area {
+  padding: 10px;
+  background-color: #ffffff;
+  border: 2px inset #d4d0c8;
+  margin: 6px;
+  min-height: 400px;
+}
+
+.section-title {
+  background-color: #000080;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 3px 8px;
+  margin: 0 0 8px 0;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 12px;
+}
+
+th {
+  background-color: #808080;
+  color: #ffffff;
+  padding: 3px 8px;
+  text-align: left;
+  border: 1px solid #404040;
+  font-weight: bold;
+}
+
+td {
+  padding: 3px 8px;
+  border: 1px solid #808080;
+  background-color: #ffffff;
+}
+
+tr:nth-child(even) td {
+  background-color: #f0f0f0;
+}
+
+.form-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 6px;
+  gap: 8px;
+}
+
+.form-label {
+  width: 160px;
+  font-size: 12px;
+  font-weight: bold;
+  color: #000080;
+  flex-shrink: 0;
+}
+
+.form-input {
+  flex: 1;
+  border: 2px inset #d4d0c8;
+  background-color: #ffffff;
+  padding: 2px 4px;
+  font-size: 12px;
+  font-family: 'MS Gothic', monospace;
+  max-width: 300px;
+}
+
+.form-input:focus {
+  outline: 1px dotted #000;
+}
+
+select.form-input {
+  background-color: #ffffff;
+}
+
+.btn {
+  background-color: #d4d0c8;
+  border: 2px solid;
+  border-top-color: #ffffff;
+  border-left-color: #ffffff;
+  border-right-color: #808080;
+  border-bottom-color: #808080;
+  padding: 4px 16px;
+  font-size: 12px;
+  cursor: pointer;
+  font-family: 'MS Gothic', monospace;
+}
+
+.btn:active {
+  border-top-color: #808080;
+  border-left-color: #808080;
+  border-right-color: #ffffff;
+  border-bottom-color: #ffffff;
+}
+
+.btn-primary {
+  background-color: #000080;
+  color: #ffffff;
+  border-top-color: #4040a0;
+  border-left-color: #4040a0;
+}
+
+.status-bar {
+  background-color: #d4d0c8;
+  border-top: 1px solid #808080;
+  padding: 2px 8px;
+  font-size: 11px;
+  display: flex;
+  gap: 16px;
+}
+
+.status-panel {
+  border: 2px inset #d4d0c8;
+  padding: 1px 8px;
+  flex: 1;
+}
+
+.alert-success {
+  background-color: #00aa00;
+  color: #ffffff;
+  padding: 6px 12px;
+  font-weight: bold;
+  border: 2px solid #008800;
+  margin: 8px 0;
+}
+
+.alert-warn {
+  background-color: #ff8800;
+  color: #ffffff;
+  padding: 6px 12px;
+  font-weight: bold;
+  border: 2px solid #cc6600;
+  margin: 8px 0;
+}
+
+.alert-error {
+  background-color: #cc0000;
+  color: #ffffff;
+  padding: 6px 12px;
+  font-weight: bold;
+  border: 2px solid #880000;
+  margin: 8px 0;
+}
+
+.nav-links {
+  list-style: none;
+  padding: 4px;
+  margin: 0;
+  background-color: #d4d0c8;
+  border: 1px solid #808080;
+}
+
+.nav-links li {
+  padding: 2px 0;
+}
+
+.nav-links a {
+  color: #000080;
+  text-decoration: underline;
+  font-size: 12px;
+}
+
+.field-required::after {
+  content: ' *';
+  color: red;
+}
+
+/* 帝国評点バッジ */
+.teikoku-score {
+  display: inline-block;
+  font-size: 28px;
+  font-weight: bold;
+  color: #000080;
+  border: 2px inset #d4d0c8;
+  background: #ffffff;
+  padding: 4px 16px;
+  font-family: 'MS Gothic', monospace;
+  min-width: 80px;
+  text-align: center;
+}
+
+.teikoku-score-label {
+  font-size: 11px;
+  color: #808080;
+  margin-left: 4px;
+}
+
+/* サードパーティ検索結果 選択行 */
+.result-row-selected td {
+  background-color: #000080 !important;
+  color: #ffffff !important;
+}

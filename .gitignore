@@ -1,0 +1,22 @@
+# 依存パッケージ（npm install で自動生成されるため除外）
+node_modules/
+
+# Next.js ビルド成果物
+.next/
+out/
+
+# 環境変数ファイル（機密情報が含まれる場合に備えて除外）
+.env
+.env.local
+.env.*.local
+
+# OS が自動生成するファイル
+.DS_Store
+Thumbs.db
+
+# エディタ設定
+.vscode/
+.idea/
+
+# Claude Code の設定（社内共有不要）
+.claude/
