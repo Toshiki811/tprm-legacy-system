@@ -10,15 +10,13 @@ const CONTRACT_TYPES = [
   '派遣',
   'SaaS/クラウドサービス',
   '保守・サポート',
+  '準委任',
   'その他',
 ];
 
 type FormState = {
   companyName: string;
   address: string;
-  employees: string;
-  capital: string;
-  teikokuScore: string;
   contractName: string;
   contractDetail: string;
   annualPayment: string;
@@ -28,11 +26,8 @@ type FormState = {
 };
 
 const emptyForm: FormState = {
-  companyName: '合同会社デロイトトーマツ',
-  address: '東京都千代田区丸の内3-2-3 丸の内二重橋ビルディング',
-  employees: '約1,943名',
-  capital: '1億円',
-  teikokuScore: '',
+  companyName: '',
+  address: '',
   contractName: '',
   contractDetail: '',
   annualPayment: '',
@@ -41,10 +36,44 @@ const emptyForm: FormState = {
   contractEnd: '',
 };
 
+// 委託先管理システム固有のカラー定数
+const GREEN_DARK = '#004d00';
+const GREEN_MID = '#007700';
+const GREEN_LIGHT = '#e8f5e8';
+const GREEN_SECTION_BG = '#004d00';
+
+// デモ入力シーケンス: [フィールド名, 入力値] の順
+const DEMO_STEPS: [keyof FormState, string][] = [
+  ['companyName', '合同会社デロイトトーマツ'],
+  ['address', '東京都千代田区丸の内3-2-3 丸の内二重橋ビルディング'],
+  ['contractName', 'コンサルティング契約'],
+  ['annualPayment', '10,000,000'],
+  ['contractType', '準委任'],
+  ['contractStart', '2026-04-01'],
+  ['contractEnd', '2026-05-01'],
+];
+
 export default function ThirdPartyEntry() {
   const [form, setForm] = useState<FormState>(emptyForm);
   const [saved, setSaved] = useState(false);
   const [savedId, setSavedId] = useState('');
+  const [demoStarted, setDemoStarted] = useState(false);
+
+  const handleDemoStart = () => {
+    if (demoStarted) return;
+    setDemoStarted(true);
+    setForm(emptyForm);
+    setSaved(false);
+    // 3秒後から2秒間隔で順に入力
+    DEMO_STEPS.forEach(([field, value], i) => {
+      setTimeout(() => {
+        setForm((prev) => ({ ...prev, [field]: value }));
+        if (i === DEMO_STEPS.length - 1) {
+          setDemoStarted(false);
+        }
+      }, 3000 + i * 2000);
+    });
+  };
 
   const today = new Date().toLocaleDateString('ja-JP', {
     year: 'numeric',
@@ -75,32 +104,50 @@ export default function ThirdPartyEntry() {
   return (
     <>
       <Head>
-        <title>サードパーティ情報管理システム</title>
+        <title>委託先管理システム</title>
       </Head>
-      <div className="window">
-        <div className="title-bar">
-          <span className="title-bar-text">サードパーティ情報管理システム v1.8　— 新規登録</span>
+      <div
+        className="window"
+        style={{ borderColor: GREEN_MID, borderStyle: 'solid' }}
+      >
+        {/* タイトルバー: 濃緑グラデーション */}
+        <div
+          className="title-bar"
+          style={{ background: `linear-gradient(to right, ${GREEN_DARK}, ${GREEN_MID})` }}
+        >
+          <span className="title-bar-text">委託先管理システム v1.8　— 新規登録</span>
           <span>_ □ ×</span>
         </div>
-        <div className="menu-bar">
-          <a href="#">ファイル(F)</a>
-          <a href="#">登録(R)</a>
-          <Link href="/">メインメニュー(M)</Link>
-          <a href="#">ヘルプ(H)</a>
+
+        {/* メニューバー: 薄緑背景 */}
+        <div
+          className="menu-bar"
+          style={{ backgroundColor: GREEN_LIGHT, borderBottomColor: GREEN_MID }}
+        >
+          <a href="#" style={{ color: GREEN_DARK }}>ファイル(F)</a>
+          <a href="#" style={{ color: GREEN_DARK }}>登録(R)</a>
+          <Link href="/" style={{ color: GREEN_DARK }}>メインメニュー(M)</Link>
+          <a href="#" style={{ color: GREEN_DARK }}>ヘルプ(H)</a>
         </div>
+
         <div className="content-area">
 
           {saved && (
             <div id="tp-save-success" className="alert-success">
-              ✔ サードパーティ情報を新規登録しました（管理ID: {savedId}）
+              ✔ 委託先情報を新規登録しました（管理ID: {savedId}）
             </div>
           )}
 
           {/* ── Section 1: 企業基本情報 ── */}
-          <div className="section-title">■ 企業基本情報</div>
+          <div
+            className="section-title"
+            style={{ backgroundColor: GREEN_SECTION_BG }}
+          >
+            ■ 企業基本情報
+          </div>
 
           <div className="form-row">
-            <label className="form-label field-required">企業名（サードパーティ名）</label>
+            <label className="form-label field-required" style={{ color: GREEN_DARK }}>企業名（委託先名）</label>
             <input
               id="tp-company-name"
               name="companyName"
@@ -108,13 +155,13 @@ export default function ThirdPartyEntry() {
               className="form-input"
               value={form.companyName}
               onChange={handleChange}
-              placeholder="例: 株式会社テクノソリューションズ"
+              placeholder=""
               style={{ maxWidth: '360px' }}
             />
           </div>
 
           <div className="form-row">
-            <label className="form-label">住所</label>
+            <label className="form-label" style={{ color: GREEN_DARK }}>住所</label>
             <input
               id="tp-address"
               name="address"
@@ -122,59 +169,21 @@ export default function ThirdPartyEntry() {
               className="form-input"
               value={form.address}
               onChange={handleChange}
-              placeholder="例: 東京都渋谷区恵比寿1-1-1"
+              placeholder=""
               style={{ maxWidth: '360px' }}
             />
           </div>
 
-          <div className="form-row">
-            <label className="form-label">従業員数</label>
-            <input
-              id="tp-employees"
-              name="employees"
-              type="text"
-              className="form-input"
-              value={form.employees}
-              onChange={handleChange}
-              placeholder="例: 120名"
-              style={{ maxWidth: '160px' }}
-            />
-          </div>
-
-          <div className="form-row">
-            <label className="form-label">資本金</label>
-            <input
-              id="tp-capital"
-              name="capital"
-              type="text"
-              className="form-input"
-              value={form.capital}
-              onChange={handleChange}
-              placeholder="例: 5,000万円"
-              style={{ maxWidth: '200px' }}
-            />
-          </div>
-
-          <div className="form-row">
-            <label className="form-label">帝国評点の結果</label>
-            <input
-              id="tp-teikoku-score"
-              name="teikokuScore"
-              type="text"
-              className="form-input"
-              value={form.teikokuScore}
-              onChange={handleChange}
-              placeholder="例: 62"
-              style={{ maxWidth: '120px' }}
-            />
-            <span style={{ fontSize: '11px', color: '#808080' }}>（0〜100の整数）</span>
-          </div>
-
           {/* ── Section 2: 契約情報 ── */}
-          <div className="section-title" style={{ marginTop: '12px' }}>■ 契約情報</div>
+          <div
+            className="section-title"
+            style={{ backgroundColor: GREEN_SECTION_BG, marginTop: '12px' }}
+          >
+            ■ 契約情報
+          </div>
 
           <div className="form-row">
-            <label className="form-label field-required">契約名</label>
+            <label className="form-label field-required" style={{ color: GREEN_DARK }}>契約名</label>
             <input
               id="tp-contract-name"
               name="contractName"
@@ -188,7 +197,7 @@ export default function ThirdPartyEntry() {
           </div>
 
           <div className="form-row" style={{ alignItems: 'flex-start' }}>
-            <label className="form-label" style={{ paddingTop: '2px' }}>契約詳細</label>
+            <label className="form-label" style={{ paddingTop: '2px', color: GREEN_DARK }}>契約詳細</label>
             <textarea
               id="tp-contract-detail"
               name="contractDetail"
@@ -202,26 +211,28 @@ export default function ThirdPartyEntry() {
           </div>
 
           <div className="form-row">
-            <label className="form-label">年間支払金額（¥）</label>
+            <label className="form-label" style={{ color: GREEN_DARK }}>年間支払金額（¥）</label>
             <input
               id="tp-annual-payment"
               name="annualPayment"
-              type="number"
+              type="text"
               className="form-input"
               value={form.annualPayment}
-              onChange={handleChange}
-              placeholder="例: 12000000"
+              onChange={(e) => {
+                const raw = e.target.value.replace(/,/g, '');
+                if (raw === '' || /^\d+$/.test(raw)) {
+                  const formatted = raw === '' ? '' : Number(raw).toLocaleString('ja-JP');
+                  setForm((prev) => ({ ...prev, annualPayment: formatted }));
+                  setSaved(false);
+                }
+              }}
+              placeholder="例: 12,000,000"
               style={{ maxWidth: '180px' }}
             />
-            <span style={{ fontSize: '11px', color: '#808080' }}>
-              {form.annualPayment
-                ? `¥${Number(form.annualPayment).toLocaleString('ja-JP')}`
-                : ''}
-            </span>
           </div>
 
           <div className="form-row">
-            <label className="form-label field-required">契約タイプ</label>
+            <label className="form-label field-required" style={{ color: GREEN_DARK }}>契約タイプ</label>
             <select
               id="tp-contract-type"
               name="contractType"
@@ -239,7 +250,7 @@ export default function ThirdPartyEntry() {
           </div>
 
           <div className="form-row">
-            <label className="form-label field-required">契約開始日</label>
+            <label className="form-label field-required" style={{ color: GREEN_DARK }}>契約開始日</label>
             <input
               id="tp-contract-start"
               name="contractStart"
@@ -252,7 +263,7 @@ export default function ThirdPartyEntry() {
           </div>
 
           <div className="form-row">
-            <label className="form-label field-required">契約終了日</label>
+            <label className="form-label field-required" style={{ color: GREEN_DARK }}>契約終了日</label>
             <input
               id="tp-contract-end"
               name="contractEnd"
@@ -265,7 +276,19 @@ export default function ThirdPartyEntry() {
           </div>
 
           <div style={{ marginTop: '16px', display: 'flex', gap: '8px' }}>
-            <button className="btn btn-primary" onClick={handleSave}>
+            {/* 登録ボタン: 緑プライマリ */}
+            <button
+              className="btn"
+              onClick={handleSave}
+              style={{
+                backgroundColor: GREEN_DARK,
+                color: '#ffffff',
+                borderTopColor: GREEN_MID,
+                borderLeftColor: GREEN_MID,
+                borderRightColor: '#002200',
+                borderBottomColor: '#002200',
+              }}
+            >
               登録(F8)
             </button>
             <button className="btn" onClick={handleClear}>
@@ -276,7 +299,12 @@ export default function ThirdPartyEntry() {
             </Link>
           </div>
         </div>
-        <div className="status-bar">
+
+        {/* ステータスバー: 薄緑背景 */}
+        <div
+          className="status-bar"
+          style={{ backgroundColor: GREEN_LIGHT, borderTopColor: GREEN_MID }}
+        >
           <span className="status-panel">
             {saved ? '登録完了' : '新規入力待機中'}
           </span>
@@ -284,6 +312,18 @@ export default function ThirdPartyEntry() {
           <span className="status-panel">日付: {today}</span>
           <span className="status-panel">接続先: TPRM-SV01</span>
         </div>
+      </div>
+
+      {/* 左下固定の開始ボタン */}
+      <div style={{ position: 'fixed', bottom: 12, left: 60, zIndex: 9999 }}>
+        <button
+          className="btn"
+          onClick={handleDemoStart}
+          disabled={demoStarted}
+          style={{ padding: '4px 14px', fontSize: 12 }}
+        >
+          {demoStarted ? '処理中...' : '開始'}
+        </button>
       </div>
     </>
   );
