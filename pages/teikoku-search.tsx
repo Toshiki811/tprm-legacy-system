@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 
 type TeikokuEntry = {
   companyName: string;
@@ -19,13 +19,13 @@ type TeikokuEntry = {
 const TEIKOKU_DB: TeikokuEntry[] = [
   {
     companyName: '合同会社デロイトトーマツ',
-    score: 79,
+    score: 100,
     ratingDate: '2025/12/01',
-    ratingCategory: 'B+',
+    ratingCategory: 'A',
     address: '東京都千代田区丸の内3-2-3 丸の内二重橋ビルディング',
     industry: '専門サービス業（コンサルティング・監査）',
     capital: '1億円',
-    employees: '約1,943名',
+    employees: '約11,000名',
     representative: '木村 研一',
     established: '2025/12/01',
     corporateId: '2010403011541',
@@ -97,17 +97,41 @@ const TEIKOKU_DB: TeikokuEntry[] = [
   },
 ];
 
-function getScoreColor(score: number): string {
-  if (score >= 80) return '#006600';
-  if (score >= 70) return '#004488';
-  if (score >= 60) return '#cc6600';
-  return '#cc0000';
-}
+const tdLabel: React.CSSProperties = {
+  backgroundColor: '#f0f0f0',
+  fontWeight: 'bold',
+  color: '#000080',
+  width: '120px',
+  whiteSpace: 'nowrap',
+};
+
+const tdValue: React.CSSProperties = {
+  width: '220px',
+};
 
 export default function TeikokuSearch() {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<TeikokuEntry[]>([]);
   const [searched, setSearched] = useState(false);
+  const [demoStarted, setDemoStarted] = useState(false);
+  const composingRef = useRef(false);
+
+  const handleDemoStart = () => {
+    if (demoStarted) return;
+    setDemoStarted(true);
+    // Step 1: 3秒後に検索欄へ文字入力
+    setTimeout(() => {
+      setQuery('合同会社デロイトトーマツ');
+      // Step 2: さらに3秒後に検索実行
+      setTimeout(() => {
+        const target = '合同会社デロイトトーマツ';
+        const filtered = TEIKOKU_DB.filter((e) => e.companyName.includes(target));
+        setResults(filtered);
+        setSearched(true);
+        setDemoStarted(false);
+      }, 3000);
+    }, 3000);
+  };
 
   const today = new Date().toLocaleDateString('ja-JP', {
     year: 'numeric',
@@ -125,7 +149,8 @@ export default function TeikokuSearch() {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' || e.key === 'F5') {
+    if (composingRef.current) return;
+    if (e.key === 'Enter') {
       handleSearch();
     }
   };
@@ -133,11 +158,11 @@ export default function TeikokuSearch() {
   return (
     <>
       <Head>
-        <title>帝国データバンク 評点照会システム</title>
+        <title>企業情報システム</title>
       </Head>
       <div className="window">
         <div className="title-bar">
-          <span className="title-bar-text">帝国データバンク 評点照会システム v2.4</span>
+          <span className="title-bar-text">企業情報システム v2.4</span>
           <span>_ □ ×</span>
         </div>
         <div className="menu-bar">
@@ -162,6 +187,8 @@ export default function TeikokuSearch() {
                     className="form-input"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
+                    onCompositionStart={() => { composingRef.current = true; }}
+                    onCompositionEnd={() => { composingRef.current = false; }}
                     onKeyDown={handleKeyDown}
                     placeholder="企業名を入力してください"
                     style={{ width: '280px', maxWidth: '280px' }}
@@ -216,173 +243,72 @@ export default function TeikokuSearch() {
                       fontWeight: 'bold',
                     }}
                   >
-                    【評点情報】{entry.companyName}
+                    【企業情報】{entry.companyName}
                   </div>
-                  <table>
-                    <tbody>
-                      <tr>
-                        <td
-                          style={{
-                            backgroundColor: '#f0f0f0',
-                            fontWeight: 'bold',
-                            color: '#000080',
-                            width: '160px',
-                          }}
-                        >
-                          帝国評点
-                        </td>
-                        <td>
-                          <span
-                            id={`teikoku-score-${entry.corporateId}`}
-                            className="teikoku-score"
-                            style={{ color: getScoreColor(entry.score) }}
-                          >
-                            {entry.score}
-                          </span>
-                          <span className="teikoku-score-label">/ 100点</span>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td
-                          style={{
-                            backgroundColor: '#f0f0f0',
-                            fontWeight: 'bold',
-                            color: '#000080',
-                          }}
-                        >
-                          評価区分
-                        </td>
-                        <td>
-                          <span
-                            id={`teikoku-category-${entry.corporateId}`}
-                            style={{ fontWeight: 'bold', fontSize: '14px' }}
-                          >
-                            {entry.ratingCategory}
-                          </span>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td
-                          style={{
-                            backgroundColor: '#f0f0f0',
-                            fontWeight: 'bold',
-                            color: '#000080',
-                          }}
-                        >
-                          評価日
-                        </td>
-                        <td id={`teikoku-date-${entry.corporateId}`}>{entry.ratingDate}</td>
-                      </tr>
-                      <tr>
-                        <td
-                          style={{
-                            backgroundColor: '#f0f0f0',
-                            fontWeight: 'bold',
-                            color: '#000080',
-                          }}
-                        >
-                          企業名
-                        </td>
-                        <td id={`teikoku-name-${entry.corporateId}`}>{entry.companyName}</td>
-                      </tr>
-                      <tr>
-                        <td
-                          style={{
-                            backgroundColor: '#f0f0f0',
-                            fontWeight: 'bold',
-                            color: '#000080',
-                          }}
-                        >
-                          所在地
-                        </td>
-                        <td id={`teikoku-address-${entry.corporateId}`}>{entry.address}</td>
-                      </tr>
-                      <tr>
-                        <td
-                          style={{
-                            backgroundColor: '#f0f0f0',
-                            fontWeight: 'bold',
-                            color: '#000080',
-                          }}
-                        >
-                          業種
-                        </td>
-                        <td id={`teikoku-industry-${entry.corporateId}`}>{entry.industry}</td>
-                      </tr>
-                      <tr>
-                        <td
-                          style={{
-                            backgroundColor: '#f0f0f0',
-                            fontWeight: 'bold',
-                            color: '#000080',
-                          }}
-                        >
-                          資本金
-                        </td>
-                        <td>{entry.capital}</td>
-                      </tr>
-                      <tr>
-                        <td
-                          style={{
-                            backgroundColor: '#f0f0f0',
-                            fontWeight: 'bold',
-                            color: '#000080',
-                          }}
-                        >
-                          従業員数
-                        </td>
-                        <td>{entry.employees}</td>
-                      </tr>
-                      <tr>
-                        <td
-                          style={{
-                            backgroundColor: '#f0f0f0',
-                            fontWeight: 'bold',
-                            color: '#000080',
-                          }}
-                        >
-                          代表者
-                        </td>
-                        <td>{entry.representative}</td>
-                      </tr>
-                      <tr>
-                        <td
-                          style={{
-                            backgroundColor: '#f0f0f0',
-                            fontWeight: 'bold',
-                            color: '#000080',
-                          }}
-                        >
-                          設立年月日
-                        </td>
-                        <td>{entry.established}</td>
-                      </tr>
-                      <tr>
-                        <td
-                          style={{
-                            backgroundColor: '#f0f0f0',
-                            fontWeight: 'bold',
-                            color: '#000080',
-                          }}
-                        >
-                          法人番号
-                        </td>
-                        <td>{entry.corporateId}</td>
-                      </tr>
-                      <tr>
-                        <td
-                          style={{
-                            backgroundColor: '#f0f0f0',
-                            fontWeight: 'bold',
-                            color: '#000080',
-                          }}
-                        >
-                          照会日時
-                        </td>
-                        <td>{now}</td>
-                      </tr>
-                    </tbody>
-                  </table>
+                  {/* 2列レイアウト: 左列・右列それぞれ独立テーブル */}
+                  <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+                    {/* 左列 */}
+                    <table style={{ flex: 1, borderCollapse: 'collapse' }}>
+                      <tbody>
+                        <tr>
+                          <td style={tdLabel}>企業名</td>
+                          <td style={tdValue} id={`teikoku-name-${entry.corporateId}`}>{entry.companyName}</td>
+                        </tr>
+                        <tr>
+                          <td style={tdLabel}>所在地</td>
+                          <td style={tdValue} id={`teikoku-address-${entry.corporateId}`}>{entry.address}</td>
+                        </tr>
+                        <tr>
+                          <td style={tdLabel}>業種</td>
+                          <td style={tdValue} id={`teikoku-industry-${entry.corporateId}`}>{entry.industry}</td>
+                        </tr>
+                        <tr>
+                          <td style={tdLabel}>資本金</td>
+                          <td style={tdValue}>{entry.capital}</td>
+                        </tr>
+                        <tr>
+                          <td style={tdLabel}>従業員数</td>
+                          <td style={tdValue}>{entry.employees}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    {/* 右列 */}
+                    <table style={{ flex: 1, borderCollapse: 'collapse' }}>
+                      <tbody>
+                        <tr>
+                          <td style={tdLabel}>代表者</td>
+                          <td style={tdValue}>{entry.representative}</td>
+                        </tr>
+                        <tr>
+                          <td style={tdLabel}>設立年月日</td>
+                          <td style={tdValue}>{entry.established}</td>
+                        </tr>
+                        <tr>
+                          <td style={tdLabel}>法人番号</td>
+                          <td style={tdValue}>{entry.corporateId}</td>
+                        </tr>
+                        <tr>
+                          <td style={tdLabel}>照会日時</td>
+                          <td style={tdValue}>{now}</td>
+                        </tr>
+                        <tr>
+                          <td style={tdLabel}>帝国評点</td>
+                          <td style={tdValue}>
+                            <span id={`teikoku-score-${entry.corporateId}`}>{entry.score}</span>
+                            <span style={{ marginLeft: '4px' }}>/ 100点</span>
+                            {'　'}
+                            <span id={`teikoku-category-${entry.corporateId}`} style={{ color: '#000080' }}>
+                              （{entry.ratingCategory}）
+                            </span>
+                            {'　'}
+                            <span id={`teikoku-date-${entry.corporateId}`} style={{ fontSize: '11px', color: '#606060' }}>
+                              評価日: {entry.ratingDate}
+                            </span>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               ))}
             </>
@@ -396,8 +322,20 @@ export default function TeikokuSearch() {
           </span>
           <span className="status-panel">ユーザー: TPRM-OPS001</span>
           <span className="status-panel">日付: {today}</span>
-          <span className="status-panel">帝国データバンク 接続中</span>
+          <span className="status-panel">企業情報システム 接続中</span>
         </div>
+      </div>
+
+      {/* 左下固定の開始ボタン（Nマーク右隣） */}
+      <div style={{ position: 'fixed', bottom: 12, left: 60, zIndex: 9999 }}>
+        <button
+          className="btn"
+          onClick={handleDemoStart}
+          disabled={demoStarted}
+          style={{ padding: '4px 14px', fontSize: 12 }}
+        >
+          {demoStarted ? '処理中...' : '開始'}
+        </button>
       </div>
     </>
   );
